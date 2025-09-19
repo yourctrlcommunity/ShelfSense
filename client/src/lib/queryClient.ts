@@ -1,5 +1,8 @@
 import { QueryClient, QueryFunction } from "@tanstack/react-query";
 
+// Railway backend URL
+const RAILWAY_API_URL = 'https://shelfsense-production.up.railway.app';
+
 async function throwIfResNotOk(res: Response) {
   if (!res.ok) {
     const text = (await res.text()) || res.statusText;
@@ -12,7 +15,10 @@ export async function apiRequest(
   url: string,
   data?: unknown | undefined,
 ): Promise<Response> {
-  const res = await fetch(url, {
+  // Use Railway URL for API calls
+  const fullUrl = url.startsWith('http') ? url : `${RAILWAY_API_URL}${url}`;
+  
+  const res = await fetch(fullUrl, {
     method,
     headers: data ? { "Content-Type": "application/json" } : {},
     body: data ? JSON.stringify(data) : undefined,
@@ -29,7 +35,10 @@ export const getQueryFn: <T>(options: {
 }) => QueryFunction<T> =
   ({ on401: unauthorizedBehavior }) =>
   async ({ queryKey }) => {
-    const res = await fetch(queryKey.join("/") as string, {
+    const endpoint = queryKey.join("/") as string;
+    const fullUrl = endpoint.startsWith('http') ? endpoint : `${RAILWAY_API_URL}/${endpoint}`;
+    
+    const res = await fetch(fullUrl, {
       credentials: "include",
     });
 
