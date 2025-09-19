@@ -15,7 +15,7 @@ export async function apiRequest(
   url: string,
   data?: unknown | undefined,
 ): Promise<Response> {
-  // Ensure proper URL construction - remove leading slash from url if present
+  // Ensure proper URL construction
   const cleanUrl = url.startsWith('/') ? url.slice(1) : url;
   const fullUrl = url.startsWith('http') ? url : `${RAILWAY_API_URL}/${cleanUrl}`;
   
@@ -37,9 +37,8 @@ export const getQueryFn: <T>(options: {
   ({ on401: unauthorizedBehavior }) =>
   async ({ queryKey }) => {
     const endpoint = queryKey.join("/") as string;
-    // Ensure proper URL construction
-    const cleanEndpoint = endpoint.startsWith('/') ? endpoint.slice(1) : endpoint;
-    const fullUrl = endpoint.startsWith('http') ? endpoint : `${RAILWAY_API_URL}/${cleanEndpoint}`;
+    // Fix: Don't add extra slash, just concatenate properly
+    const fullUrl = endpoint.startsWith('http') ? endpoint : `${RAILWAY_API_URL}${endpoint}`;
     
     const res = await fetch(fullUrl, {
       credentials: "include",
