@@ -15,8 +15,9 @@ export async function apiRequest(
   url: string,
   data?: unknown | undefined,
 ): Promise<Response> {
-  // Use Railway URL for API calls
-  const fullUrl = url.startsWith('http') ? url : `${RAILWAY_API_URL}${url}`;
+  // Ensure proper URL construction - remove leading slash from url if present
+  const cleanUrl = url.startsWith('/') ? url.slice(1) : url;
+  const fullUrl = url.startsWith('http') ? url : `${RAILWAY_API_URL}/${cleanUrl}`;
   
   const res = await fetch(fullUrl, {
     method,
@@ -36,7 +37,9 @@ export const getQueryFn: <T>(options: {
   ({ on401: unauthorizedBehavior }) =>
   async ({ queryKey }) => {
     const endpoint = queryKey.join("/") as string;
-    const fullUrl = endpoint.startsWith('http') ? endpoint : `${RAILWAY_API_URL}/${endpoint}`;
+    // Ensure proper URL construction
+    const cleanEndpoint = endpoint.startsWith('/') ? endpoint.slice(1) : endpoint;
+    const fullUrl = endpoint.startsWith('http') ? endpoint : `${RAILWAY_API_URL}/${cleanEndpoint}`;
     
     const res = await fetch(fullUrl, {
       credentials: "include",
