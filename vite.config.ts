@@ -19,6 +19,7 @@ export default defineConfig({
         ]
       : []),
   ],
+  base: "/ShelfSense/", // Add this line for GitHub Pages
   resolve: {
     alias: {
       "@": path.resolve(import.meta.dirname, "client", "src"),
